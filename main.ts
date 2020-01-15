@@ -1,6 +1,14 @@
 import { calcDistance, getMousePosition } from "./util.js";
-let element = document.getElementById('svg');
-if (element) { element.addEventListener('click', getMousePosition) }
+
+window.addEventListener('load',()=>{
+    let element = document.getElementById('svg') as HTMLObjectElement;
+    element.contentDocument?.addEventListener('click', getMousePosition)
+
+    //attaching cities with event
+    element?.contentDocument?.getElementById("tspan6834-4-2")?.addEventListener('mouseover',()=>{
+        console.log('Paris');
+    })
+});
 
 function calculateAllLinks(): void {
     for (let i = 0; i < cities.length; i++) {
@@ -15,6 +23,9 @@ function calculateAllLinks(): void {
             });
         }
     }
+}
+function handleCity():void{
+    
 }
 
 let paris: City = { name: 'Paris', x: 0, y: 0 };
