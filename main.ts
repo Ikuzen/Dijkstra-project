@@ -1,6 +1,10 @@
 import { calcDistance, getMousePosition } from "./util.js";
-let element = document.getElementById('svg');
-if (element) { element.addEventListener('click', getMousePosition) }
+
+document.getElementById("svg")?.addEventListener("load", function () {
+    let element =(document.getElementById('svg') as HTMLObjectElement).contentDocument?.documentElement;
+     element?.addEventListener('click', getMousePosition)
+})
+
 
 function calculateAllLinks(): void {
     for (let i = 0; i < cities.length; i++) {
