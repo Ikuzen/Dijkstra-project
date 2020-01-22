@@ -1,26 +1,41 @@
 import { calcDistance, getMousePosition, calculateShortestPath } from "./util.js";
+let cityNames = ['paris', 'lyon', 'marseille', 'dijon', 'strasbourg', 'lille', 'rennes', 'toulouse',]
 let paris: City;
 let lyon: City;
 let marseille: City;
 let dijon: City;
-let cities: City[];
+let strasbourg: City;
+let lille: City;
+let rennes: City;
+let bordeaux:City;
+let toulouse: City;
 let links: Link[];
-let firstCitySelected:City;
-
+let cities: City[];
+let firstCitySelected: City;
 let element: HTMLObjectElement
+let reset = false;
+let canvas = document.getElementById("canvas");
+let ctx = canvas?.getContext("2d");
 
-window.addEventListener('load',()=>{
+
+
+window.addEventListener('load', () => {
     element = document.getElementById('svg').contentDocument as HTMLObjectElement;
     element.addEventListener('click', getMousePosition)
-    paris = getCityAttributes(element,'paris');
-    lyon = getCityAttributes(element,'lyon');
-    marseille= getCityAttributes(element,'marseille');
-    dijon= getCityAttributes(element,'dijon');
-    cities= [paris, lyon, marseille, dijon];
-    links =[];
+    paris = getCityAttributes(element, 'paris');
+    lyon = getCityAttributes(element, 'lyon');
+    marseille = getCityAttributes(element, 'marseille');
+    dijon = getCityAttributes(element, 'dijon');
+    strasbourg = getCityAttributes(element, 'strasbourg');
+    lille = getCityAttributes(element, 'lille');
+    rennes = getCityAttributes(element, 'rennes');
+    bordeaux = getCityAttributes(element, 'bordeaux')
+    toulouse = getCityAttributes(element, 'toulouse')
+    cities = [paris, lyon, marseille, dijon, strasbourg, lille, rennes,bordeaux, toulouse]
+    links = [];
     calculateAllLinks();
     //attaching cities with event
-    element?.addEventListener('click',(event:any)=>{
+    element?.addEventListener('click', (event: any) => {
         handleCity(event);
     })
 });
@@ -40,44 +55,72 @@ function calculateAllLinks(): void {
     }
 }
 
-function handleCity(event:any):void{
-    for(let city of cities){
-        if(city.name ===event.target.id){
+function handleCity(event: any): void {
+    for (let city of cities) {
+        if (city.name === event.target.id) {
             selectCity(city);
             break
         }
     }
 }
 
-function selectCity(city:City):void{
-    if(city === firstCitySelected) return;
-    if(!firstCitySelected) {
-        firstCitySelected = city;
-        highlight(element?.getElementById(city.name))
-    }
-    else if(firstCitySelected){
-        highlight(element?.getElementById(city.name))
-        console.log(firstCitySelected,city)
-        console.log(calculateShortestPath(firstCitySelected,city));
+function selectCity(city: City): void {
+    if(city === firstCitySelected || city.isHighlighted || reset){
         
+        unHighlightAll();
+        ctx.clearRect(0, 0, 1000, 1000);
+        firstCitySelected = null;
+        if(reset!= true){
+            return;
+        }
+        reset = false;
     }
 
+    if (!firstCitySelected) {
+        firstCitySelected = city;
+        highlight(element?.getElementById(city.name));
+        city.isHighlighted = true
+        console.log("selecting first city")
+    }
+    else if (firstCitySelected) {
+        highlight(element?.getElementById(city.name));
+        console.log(firstCitySelected, city);
+        console.log(calculateShortestPath(firstCitySelected, city));
+        drawLine(firstCitySelected, city);
+        city.isHighlighted = true;
+        reset = true;
+    }
 
 }
 
-function getCityAttributes(element:HTMLObjectElement, cityName:string):City{
-    let returnedCity:City
-    let _element = element?.getElementById(cityName)
-    returnedCity = {name:cityName, x:parseFloat(_element?.getAttribute('x')), y:parseFloat(_element?.getAttribute('y'))}
+function getCityAttributes(element: HTMLObjectElement, cityName: string): City {
+    let returnedCity: City;
+    let _element = element?.getElementById(cityName);
+    returnedCity = { name: cityName, x: parseFloat(_element?.getAttribute('x')), y: parseFloat(_element?.getAttribute('y')), isHighlighted: false };
     return returnedCity;
 }
 
-function highlight(element:HTMLElement):void{
+function highlight(element: HTMLElement): void {
+
     element.style.fill = "red";
     element.style.fontSize = 30;
 }
 
-function unHighlight(element:HTMLElement):void{
+function unHighlight(element: HTMLElement): void {
     element.style.fill = "black";
     element.style.fontSize = 20;
+}
+
+function unHighlightAll(): void {
+    cities.map((city) => {
+        unHighlight(element.getElementById(city.name))
+        city.isHighlighted = false;
+    });
+}
+
+function drawLine(city1: City, city2: City) {
+    ctx.beginPath();
+    ctx.moveTo(city1.x, city1.y);
+    ctx.lineTo(city2.x, city2.y);
+    ctx.stroke();
 }

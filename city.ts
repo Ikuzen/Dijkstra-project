@@ -7,4 +7,5 @@ interface City {
     name: string; // must be unique
     x: number;
     y: number;
+    isHighlighted?:boolean;
 }

@@ -1,16 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Carte de France</title>
-    <style src="main.css"></style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Carte de France</title>
+  <style src="main.css"></style>
 </head>
+
 <body>
-  <object id="svg" type="image/svg+xml" data="map.svg">
-    </object>
-<script src="city.js"></script>
-<script type='module' src="util.js"></script>
-<script type='module' src="controller.js"></script>
+
+  <div id="canvas-wrap">
+    <canvas id="canvas" width="800" height="600" style="z-index:-100;position:absolute"></canvas>
+    <object id="svg" type="image/svg+xml" data="map.svg" style="opacity:0.7">
+    </object> 
+  </div>
+  <script src="city.js"></script>
+  <script type='module' src="util.js"></script>
+  <script type='module' src="controller.js"></script>
+</body>
+
 </html>
