@@ -9,5 +9,5 @@ interface City {
     x: number;
     y: number;
     isHighlighted?:boolean;
-    adjacentCities?:City[];
+    adjacentCities?:string[];
 }

@@ -13,6 +13,7 @@ export class Controller {
     links: Link[];
     cities: City[];
     firstCitySelected: City;
+    cityObject = {}
     element: HTMLObjectElement
     reset = false;
     canvas = document.getElementById("canvas");
@@ -22,17 +23,27 @@ export class Controller {
         window.addEventListener('load', () => {
             this.element = document.getElementById('svg').contentDocument;
             this.element.addEventListener('click', getMousePosition)
-            this.paris = this.getCityAttributes(this.element, 'paris');
-            this.lyon = this.getCityAttributes(this.element, 'lyon');
-            this.marseille = this.getCityAttributes(this.element, 'marseille');
-            this.dijon = this.getCityAttributes(this.element, 'dijon');
-            this.strasbourg = this.getCityAttributes(this.element, 'strasbourg');
-            this.lille = this.getCityAttributes(this.element, 'lille');
-            this.rennes = this.getCityAttributes(this.element, 'rennes');
-            this.bordeaux = this.getCityAttributes(this.element, 'bordeaux')
-            this.toulouse = this.getCityAttributes(this.element, 'toulouse')
+            this.paris = this.setCityAttributes(this.element, 'paris',['rennes','dijon','lille','strasbourg']);
+            this.lyon = this.setCityAttributes(this.element, 'lyon',['marseille','toulouse','bordeaux','dijon']);
+            this.marseille = this.setCityAttributes(this.element, 'marseille',['toulouse','lyon']);
+            this.dijon = this.setCityAttributes(this.element, 'dijon',['rennes','paris','bordeaux','strasbourg','lyon']);
+            this.strasbourg = this.setCityAttributes(this.element, 'strasbourg',['lille','paris','dijon']);
+            this.lille = this.setCityAttributes(this.element, 'lille',['rennes','paris','strasbourg']);
+            this.rennes = this.setCityAttributes(this.element, 'rennes',['bordeaux','dijon','paris','lille']);
+            this.bordeaux = this.setCityAttributes(this.element, 'bordeaux',['lyon','toulouse','dijon','rennes'])
+            this.toulouse = this.setCityAttributes(this.element, 'toulouse',['bordeaux','lyon','marseille'])
             this.cities = [this.paris, this.lyon, this.marseille, this.dijon, this.strasbourg, this.lille, this.rennes, this.bordeaux, this.toulouse]
             this.links = [];
+            this.cityObject = {
+                'paris':this.paris,
+                'lyon':this.lyon,
+                'marseille':this.marseille,
+                'dijon':this.dijon,
+                'strasbourg':this.strasbourg,
+                'lille':this.lille,
+                'rennes':this.rennes,
+                'toulouse':this.toulouse
+            }
             this.calculateAllLinks();
             console.log(this.links)
             //attaching cities with event
@@ -116,21 +127,30 @@ export class Controller {
         }
 
     }
-    findShortestPath(city1: City, city2: City) {
-
+    findShortestPath(city1: City, city2: City):number {
+        let distanceArray = [];
+        let secondCity = city2;
+        for (let city in city1.adjacentCities){
+            let distance = 0;
+            const crossedCities = [];
+            while(city != secondCity.name){
+                distance += calcDistance(this.cityObject[city].x, this.cityObject[city].y, city2.x, city2.y)
+                crossedCities.push(secondCity.name)
+                
+            }
+        }
     }
 
-    getCityAttributes(element: HTMLObjectElement, cityName: string): City {
+    setCityAttributes(element: HTMLObjectElement, cityName: string, adjacentCityNames:string[]): City {
         let returnedCity: City;
         let _element = element?.getElementById(cityName);
         _element.style.cursor = "pointer";
         _element.style.fontSize = "20px";
-        returnedCity = { name: cityName, x: parseFloat(_element?.getAttribute('x')), y: parseFloat(_element?.getAttribute('y')), isHighlighted: false };
+        returnedCity = { name: cityName, x: parseFloat(_element?.getAttribute('x')), y: parseFloat(_element?.getAttribute('y')), isHighlighted: false, adjacentCities:adjacentCityNames };
         return returnedCity;
     }
 
     highlight(element: HTMLElement): void {
-
         element.style.fill = "red";
         element.style.fontSize = "30px";
     }
